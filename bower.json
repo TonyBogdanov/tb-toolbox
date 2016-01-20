@@ -12,12 +12,15 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests"
+    "tests",
+    "build-js.cmd",
+    "scss/_toolbox-dev.scss"
   ],
   "dependencies": {
     "mathsass": "~0.9.5",
 	"bourbon": "~4.2.6",
     "bootstrap": "v4.0.0-alpha.2",
-    "jquery": "~2.2.0"
+    "jquery": "~2.2.0",
+    "jquery-bez": "~1.0.11"
   }
 }
