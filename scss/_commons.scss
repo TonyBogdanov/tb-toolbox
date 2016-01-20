@@ -1,0 +1,36 @@
+// Easings
+$swift:           cubic-bezier(0.55, 0, 0.1, 1);
+$easeIn:          cubic-bezier(0.5, 0.01, 1, 0.01);
+$easeOut:         cubic-bezier(0.01, 0.5, 0.01, 1);
+
+// Durations
+$fastest:         0.1s;
+$veryFast:        0.25s;
+$fast:            0.35s;
+$medium:          0.5s;
+$slow:            0.75s;
+$verySlow:        1s;
+$slowest:         2.5s;
+
+// Bourbon's transition mixin isn't compatible with libsass on windows (at least in my build)
+@mixin trans-prefix($value, $prefix: "") {
+  $slice: str-slice(inspect($value), 0, 9);
+  @if $slice == "transform" {
+    #{$prefix}transition: #{$prefix}#{$value};
+  } @else {
+    #{$prefix}transition: $value;
+  }
+}
+@mixin transition($properties...) {
+  $spec:                ();
+  @if length($properties) > 1 {
+    @for $i from 1 through length($properties) {
+      $spec:            append($spec, nth($properties, $i), comma);
+    }
+  } @else {
+    $spec:              $properties;
+  }
+  @include trans-prefix($spec, -webkit-);
+  @include trans-prefix($spec, -moz-);
+  @include trans-prefix($spec);
+}

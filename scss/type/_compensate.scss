@@ -1,0 +1,10 @@
+// Use this to adjust type acording to the baseline distance (use the type-measurer tool to measure distances)
+
+@function compensate-type-get-distance($type, $line-height: 1) {
+  @return (0.5 - $line-height / 2) - nth(map-get($typeCompensate, $type), 1);
+}
+
+@mixin compensate-type($type, $line-height: 1, $margin-bottom: 0) {
+  margin-top: set-unit(compensate-type-get-distance($type, $line-height), em);
+  margin-bottom: set-unit($margin-bottom + compensate-type-get-distance($type, $line-height), em);
+}

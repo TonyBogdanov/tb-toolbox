@@ -1,0 +1,11 @@
+// Get black or white depending on the best contrast with the specified color
+@function color-contrast($color, $dark: #000, $light: #fff) {
+  @if $color == null {
+    @return null;
+  } @else {
+    $color-brightness: brightness($color);
+    $light-text-brightness: brightness($light);
+    $dark-text-brightness: brightness($dark);
+    @return if(abs($color-brightness - $light-text-brightness) > abs($color-brightness - $dark-text-brightness), $light, $dark);
+  }
+}
