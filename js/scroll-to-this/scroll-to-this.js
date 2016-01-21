@@ -23,6 +23,8 @@
  *
  * As you can probably see you can add multiple "adds" and "subs" by changing the "0" number in the attribute names.
  * Make sure the numbers are consecutive. If you specify 0 and 2, but not 1, the script will only account for 0.
+ *
+ * You can also add a custom offset by specifying it in the options: {offset: 12}.
  */
 (function($) {
     "use strict";
@@ -67,8 +69,7 @@
         return $element.height();
     };
 
-    var resolveOffset           = function() {
-        var offset              = 0;
+    var resolveOffset           = function(offset) {
         for(var i = 0; $body[0].hasAttribute('data-scrolltothis-offset-add-' + i); i++) {
             offset              += resolveSingleOffset('data-scrolltothis-offset-add-' + i);
         }
@@ -83,7 +84,8 @@
         $target                 = 0 < $target.length ? $target : $(document);
 
         var offset              = $(this).first().offset().top;
-        offset                  = 0 == offset ? 0 : offset + resolveOffset();
+        offset                  = 0 == offset ? 0 : offset + resolveOffset('number' == typeof options.offset ?
+            options.offset : 0);
 
         options                 = $.extend({}, {
             duration:           1000,
