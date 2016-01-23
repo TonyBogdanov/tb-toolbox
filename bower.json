@@ -1,6 +1,5 @@
 {
   "name": "tb-toolbox",
-  "version": "1.0",
   "homepage": "https://github.com/TonyBogdanov/toolbox",
   "authors": [
     "Tony Bogdanov <tonybogdanov@gmail.com>"
@@ -8,6 +7,10 @@
   "description": "",
   "moduleType": [],
   "license": "MIT",
+  "main": [
+    "scss/_toolbox.scss",
+    "dist/toolbox.js"
+  ],
   "ignore": [
     "**/.*",
     "node_modules",
