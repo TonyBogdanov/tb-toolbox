@@ -34,3 +34,14 @@ $slowest:         2.5s;
   @include trans-prefix($spec, -moz-);
   @include trans-prefix($spec);
 }
+
+// Bourbon's calc does not support !important
+@mixin calc($property, $value, $important: false) {
+  @if $important {
+    #{$property}: -webkit-calc(#{$value}) !important;
+    #{$property}: calc(#{$value}) !important;
+  } @else {
+    #{$property}: -webkit-calc(#{$value});
+    #{$property}: calc(#{$value});
+  }
+}
