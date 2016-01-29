@@ -18,7 +18,8 @@
     "test",
     "tests",
     "build-js.cmd",
-    "scss/_toolbox-dev.scss"
+    "scss/_toolbox-dev.scss",
+    "analyze-typeface"
   ],
   "dependencies": {
     "mathsass": "~0.9.5",

@@ -1,0 +1,17 @@
+// Applies a baseline grid (based on the root size) to visually aid vertical flow
+// When observing vertical flow, the bottom edge of elements should reach the bottom edge of the grid line
+// E.g. the line should be exactly overlapped by the bottom-most 1px of the element
+@mixin baseline-grid($background-color: #fff, $line-color: #7ff, $line-thickness: 1px) {
+  background-size: 100% 1rem;
+  background-position: 0 0;
+  background-repeat: repeat-y;
+
+  $calc: unquote("calc(100% - #{$line-thickness})");
+
+  @include linear-gradient(
+                  $background-color 0%,
+                  $background-color $calc,
+                  $line-color $calc,
+                  $line-color 100%
+  );
+}

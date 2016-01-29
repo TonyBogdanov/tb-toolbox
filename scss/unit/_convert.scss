@@ -35,3 +35,12 @@
 
   @error "Unknown unit `#{$unit}`.";
 }
+
+// Get the value of a number without the unit
+@function remove-unit($value) {
+  @if type-of($value) == 'number' and not unitless($value) {
+    @return $value / ($value * 0 + 1);
+  }
+
+  @return $value;
+}

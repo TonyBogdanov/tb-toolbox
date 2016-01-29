@@ -1,0 +1,145 @@
+// First import the library (you should probably not use the dev version)
+@import "../scss/toolbox-dev";
+
+// It's important to reset everything for the calculations to follow
+@import "../scss/typography/reset";
+
+// Now we define our baseline size (usually the default font size)
+// Absolutely everything will be sized relative to this value, you can look at this as a kind of a global zoom setting
+// This value will be equal to 1rem
+// Keep in mind that line-heights will always be rounded up or down so all text baselines would "snap" to this value
+// If you need better control, choose rather small value, which will result in a smaller grid with more divisions
+@include base(12);
+
+// Let's define a globally consistent spacing (bottom margin) between elements
+// Should be a whole number or it will break the rithm
+$space: 4rem;
+
+// Before we go any further we'll need to import all fonts we are going to be using
+// We'll also define them as variables for easier reference
+@import url('https://fonts.googleapis.com/css?family=Raleway:100,200,300|Roboto:400,400italic,700,700italic|Roboto+Mono');
+$font1: 'Raleway';
+$font2: 'Roboto';
+$font3: 'Roboto Mono';
+
+// Now we'll need to register each typeface
+// If you don't know the dimensions of the typeface you've chosen, you can try and analyze it using the following tool,
+// given that you have the source TTF font file: http://test.tonybogdanov.com/analyze-typeface
+@include font-register($font1, 100, $baseline: 0.8533333333333333);
+@include font-register($font1, 200, $baseline: 0.8533333333333333);
+@include font-register($font1, 300, $baseline: 0.8533333333333333);
+@include font-register($font2, 400, $baseline: 0.8866666666666667);
+@include font-register($font2, 400, $italic: true, $baseline: 0.8566666666666667);
+@include font-register($font2, 700, $baseline: 0.8866666666666667);
+@include font-register($font2, 700, $italic: true, $baseline: 0.8866666666666667);
+@include font-register($font3, 400, $baseline: 0.8866666666666667);
+
+// Let's add a baseline grid, so we can easily see if everything aligns properly
+// That's just a debug thing, you should probably skip this in production
+body {
+  @include baseline-grid();
+}
+
+// Just some default (demo specific) goodness
+* {
+  text-rendering:                 optimizelegibility;
+  -webkit-font-feature-settings: 'kern' 1,'onum' 1,'liga' 1;
+     -moz-font-feature-settings: 'kern' 1,'onum' 1,'liga' 1;
+      -ms-font-feature-settings: 'kern' 1,'onum' 1,'liga' 1;
+       -o-font-feature-settings: 'kern' 1,'onum' 1,'liga' 1;
+          font-feature-settings: 'kern' 1,'onum' 1,'liga' 1;
+}
+body .typography {
+  @include make-container();
+  @include make-container-max-widths();
+}
+
+// Headings
+$ratios: (
+        xs: 24 / 20,
+        sm: 25 / 20,
+        md: 26 / 20,
+        lg: 27 / 20,
+        xl: 28 / 20
+);
+@for $i from 1 through 6 {
+  $heading: unquote('h#{$i}');
+
+  @include type-selector($heading) {
+    letter-spacing: -0.035em;
+
+    $weight: 300;
+
+    @if 1 == $i or 2 == $i {
+      $weight: 100;
+    } @elseif 3 == $i or 4 == $i {
+      $weight: 200;
+    }
+
+    @include font-responsive((
+            xs: (name: $font1, size: px(8) + pow(map_get($ratios, xs), 6 - $i), weight: $weight, margin: $space),
+            sm: (name: $font1, size: px(8) + pow(map_get($ratios, sm), 6 - $i), weight: $weight, margin: $space),
+            md: (name: $font1, size: px(8) + pow(map_get($ratios, md), 6 - $i), weight: $weight, margin: $space),
+            lg: (name: $font1, size: px(8) + pow(map_get($ratios, lg), 6 - $i), weight: $weight, margin: $space),
+            xl: (name: $font1, size: px(8) + pow(map_get($ratios, xl), 6 - $i), weight: $weight, margin: $space)
+    ));
+  }
+}
+
+// Paragraphs
+@include type-selector(p) {
+  @include font($font2, px(15), 2, $margin: $space);
+
+  // Compensate immediate siblings
+  & + p,
+  & + .p {
+    margin-top: (1rem - $space);
+  }
+}
+
+// Lists
+.li {
+  @include font($font2, px(15), 2);
+}
+@include type-selector(ul, ol) {
+  padding-left: $space;
+  margin-bottom: $space;
+
+  li {
+    @extend .li;
+  }
+}
+@include type-selector(ul) {
+  list-style-type: circle;
+}
+@include type-selector(ol) {
+  list-style-type: decimal;
+}
+
+// Blockquotes
+@include type-selector(blockquote){
+  margin-left: $space;
+  border-left: #00cae9 0.5rem solid;
+  padding-left: $space / 2;
+  margin-bottom: $space;
+}
+
+// Preformatted
+@include type-selector(pre) {
+  background: transparentize(mix(#fff, #00cae9, 50%), 0.5);
+  padding: 1rem 1.5rem;
+
+  @include font($font3, px(15), 2, $margin: $space);
+}
+
+// Horizontal line
+@include type-selector(hr) {
+  display: block;
+  width: 100%;
+  height: 3px;
+  border: 0;
+  margin-top: -2px;
+  background: #00cae9;
+
+  @include calc(margin-bottom, '#{$space} - 1px');
+}

@@ -1,0 +1,200 @@
+// Stores all registered fonts (globally)
+$__fonts:       ();
+
+// Retrieves a font identifier for the specified characteristics
+@function get-font-id(
+  // Must be a valid non-empty string
+  $name:        '',
+
+  // Must be a number between 100 and 900 divisible by 100, the closest valid one will be used otherwise
+  $weight:      400,
+
+  // Must be a boolean (true or false)
+  $italic:      false,
+
+  // Must be a valid non-empty string or false
+  $special:     false
+) {
+  @if 'string' != type_of($name) {
+    @error "Font $name must be a string.";
+  } @elseif ('' == $name) {
+    @error "Font $name must not be empty.";
+  }
+
+  @if 'number' != type_of($weight) {
+    @error "Font $weight must be a number.";
+  }
+  $weight:      min(900, max(100, round($weight / 100) * 100));
+
+  @if 'bool' != type_of($italic) {
+    @error "Font $italic must be a boolean (true or false).";
+  }
+
+  @if false != $special and ('string' != type_of($special) or '' == $special) {
+    @error "Font $special must be a non-empty string or boolean false.";
+  }
+
+  $id:          $name + ':' + $weight;
+
+  @if $italic {
+    $id:        $id + 'i';
+  }
+
+  @if false != $special {
+    $id:        $id + ',' + $special;
+  }
+
+  @return $id;
+}
+
+// Retrieves a font's baseline value for the specified font id or false if there is no such entry
+@function get-font-baseline(
+  // Must be a valid previously registered font identifier
+  $id
+) {
+  @if 'string' != type_of($id) {
+    @error "Font $id must be a string.";
+  } @elseif ('' == $id) {
+    @error "Font $id must not be empty.";
+  }
+
+  @each $font in $__fonts {
+    @if $id == nth($font, 1) {
+      @return nth($font, 2);
+    }
+  }
+
+  @return false;
+}
+
+// Registers a font's padding values for the specified font characteristics in the global scope
+@mixin font-register(
+  // Font name, e.g. "Raleway"
+  $name,
+
+  // Font weight from 100 to 900 (must be divisible by 100)
+  $weight:          400,
+
+  // Is the font italic
+  $italic:          false,
+
+  // Some other special string data to distinguish the font declaration (e.g. 'small-caps')
+  $special:         false,
+
+  // The baseline ratio between the actual text baseline and the font's view box for line-height 1
+  $baseline:        0
+) {
+  $__fonts:     append($__fonts, (get-font-id($name, $weight, $italic, $special), remove-unit($baseline))) !global;
+}
+
+// Apply font styles
+@mixin font(
+  // Font name, e.g. "Raleway", must have been previously registered
+  $name,
+
+  // Desired font size in rems
+  $size:            1,
+
+  // Desired (additional) line-height as a (whole) number of baselines
+  // Baselines will be evenly distributed above and below the content
+  $line-height:     1,
+
+  // Desired font weight
+  $weight:          400,
+
+  // Is the font italic
+  $italic:          false,
+
+  // Special data, only used to identify the font, you must add these styles yourself
+  $special:         false,
+
+  // A margin in rems to be added after the element (irrelevant to chosen font size)
+  // If left 0, the bottom of the visible text will "touch" the next vertical element (in case line-height is set to 1)
+  // We recommend using a globally consistent value
+  $margin:          0,
+
+  // A breakpoint name per which (and above) to apply the styles
+  $breakpoint:      xs
+) {
+  // Normalize
+  $size:              remove-unit($size);
+  $line-height:       round($line-height) - 1;
+
+  // Base height, divisible by rem
+  $base-height:       round($size) + $line-height;
+
+  // Natural typeface baseline
+  $font-id:           get-font-id($name, $weight, $italic, $special);
+  $baseline:          get-font-baseline($font-id);
+  @if false == $baseline {
+    @error "No such font has been registered: #{$font-id}";
+  }
+
+  // Calculate bottom distance & how much to compensate to align to the baseline
+  $bottom:            (1 - $baseline) * $size + ($base-height - $size) / 2;
+  $compensate:        $bottom - ceil($bottom);
+
+  // Styles
+  // Fallback families are not supported as they will require different offset values
+  @if not map_has_key($grid-breakpoints, $breakpoint) {
+    @error 'No such breakpoint `#{$breakpoint}`';
+  }
+  @include media-breakpoint-up($breakpoint) {
+    font-family:      $name;
+    font-size:        set-unit($size, rem);
+    line-height:      set-unit($base-height, rem);
+    font-weight:      $weight;
+    transform:        translateY(set-unit($compensate, rem));
+
+    @if 0 < $margin {
+      margin-bottom:  set-unit($margin, rem);
+    }
+
+    @if $italic {
+      font-style:     italic;
+    }
+  }
+}
+
+// Similar to font() but accepts a map of breakpoint based values, e.g. (xs: ( .. args .. ), sm: ( .. args .. ) .. )
+@mixin font-responsive($map) {
+  @if 'map' != type_of($map) {
+    @error 'Argument list must be a valid breakpoint based map';
+  }
+
+  @each $breakpoint in map_keys($map) {
+    $final-args:      ();
+    $passed-args:     map_get($map, $breakpoint);
+    $default-args:    (
+            size:         1,
+            line-height:  1,
+            weight:       400,
+            italic:       false,
+            special:      false,
+            margin:       0
+    );
+
+    @if not map_has_key($passed-args, name) {
+      @error 'Missing required param `name`';
+    }
+
+    @each $key in map_keys($default-args) {
+      @if map_has_key($passed-args, $key) {
+        $final-args:      map_merge($final-args, ($key: map_get($passed-args, $key)));
+      } @else {
+        $final-args:      map_merge($final-args, ($key: map_get($default-args, $key)));
+      }
+    }
+
+    @include font(
+            $name:        map_get($passed-args, name),
+            $size:        map_get($final-args, size),
+            $line-height: map_get($final-args, line-height),
+            $weight:      map_get($final-args, weight),
+            $italic:      map_get($final-args, italic),
+            $special:     map_get($final-args, special),
+            $margin:      map_get($final-args, margin),
+            $breakpoint:  $breakpoint
+    );
+  }
+}

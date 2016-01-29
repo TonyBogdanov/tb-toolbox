@@ -1,0 +1,27 @@
+@import "utils";
+@import "grid";
+@import "font";
+
+// Generates selectors for a single element
+// E.g. a "h1" will generate .typography h1, .h1 { ... }
+@mixin type-selector-single($element) {
+  $selector:        '.typography #{$element}, .#{$element}';
+  #{$selector} {
+    @content;
+  }
+}
+
+// Generates selectors for the specified element(s)
+@mixin type-selector($element...) {
+  @if 'arglist' == type_of($element) and 1 < length($element) {
+    @each $item in $element {
+      @include type-selector-single($item) {
+        @content;
+      }
+    }
+  } @else {
+    @include type-selector-single($element) {
+      @content;
+    }
+  }
+}
