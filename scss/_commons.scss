@@ -38,12 +38,13 @@ $slowest:         2.5s;
 }
 
 // Bourbon's calc does not support !important
-@mixin calc($property, $value, $important: false) {
+// Bourbon's calc does not support !important
+@mixin calc($property, $value, $important: false, $prefix: '', $suffix: '') {
   @if $important {
-    #{$property}: -webkit-calc(#{$value}) !important;
-    #{$property}: calc(#{$value}) !important;
+    #{$property}: #{$prefix}-webkit-calc(#{$value})#{$suffix} !important;
+    #{$property}: #{$prefix}calc(#{$value})#{$suffix} !important;
   } @else {
-    #{$property}: -webkit-calc(#{$value});
-    #{$property}: calc(#{$value});
+    #{$property}: #{$prefix}-webkit-calc(#{$value})#{$suffix};
+    #{$property}: #{$prefix}calc(#{$value})#{$suffix};
   }
 }
