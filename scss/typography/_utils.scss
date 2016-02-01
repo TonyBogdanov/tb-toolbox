@@ -16,3 +16,21 @@ $base:                16 !default;
 @function px($value) {
   @return set-unit(remove-unit($value) / $base, rem);
 }
+
+// It's rather time consuming to write all anchor states when defining selectors
+@mixin anchor() {
+  &,
+  &:link,
+  &:visited,
+  &:hover,
+  &:active,
+  &:focus {
+    @content;
+  }
+}
+@mixin anchor-hover() {
+  &:hover,
+  &:active {
+    @content;
+  }
+}
