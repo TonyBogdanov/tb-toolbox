@@ -5,7 +5,7 @@
 // Generates selectors for a single element
 // E.g. a "h1" will generate .typography h1, .h1 { ... }
 @mixin type-selector-single($element) {
-  $selector:        '.typography #{$element}, .#{$element}';
+  $selector:        '.typography #{$element}, *.#{$element}';
   #{$selector} {
     @content;
   }
