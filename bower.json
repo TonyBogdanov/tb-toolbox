@@ -19,6 +19,7 @@
     "tests",
     "build-js.cmd",
     "scss/_toolbox-dev.scss",
+    "demo",
     "analyze-typeface"
   ],
   "dependencies": {
