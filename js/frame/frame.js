@@ -7,6 +7,8 @@
  * Use: $.frame('event-name', callback) or $.frame(['event1', 'event2'], callback) to register a callback to specific events.
  * Use: $.frame('event-name', true, callback) to register a callback to be executed only once then detached.
  * Use: $.frame(callback) to execute the callback immediately on the next frame draw.
+ *
+ * You can also target multiple events and an immediate execution by using a null: $.frame([null, 'event'], callback)
  */
 (function($) {
     "use strict";
@@ -45,6 +47,12 @@
         return $(this).each(function() {
             // Target
             var $this               = $(this);
+
+            // a is null and b is a function (immediate execution)
+            if(null === a && 'function' == typeof b) {
+                requestAnimationFrame.call(this, b);
+                return true;
+            }
 
             // a is a traversable object (array)
             if('object' == typeof a) {
