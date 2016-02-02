@@ -18,19 +18,77 @@ $base:                16 !default;
 }
 
 // It's rather time consuming to write all anchor states when defining selectors
-@mixin anchor() {
-  &,
-  &:link,
-  &:visited,
-  &:hover,
-  &:active,
-  &:focus {
-    @content;
+@mixin anchorify($selector, $default: true, $link: true, $visited: true, $hover: true, $active: true, $focus: true) {
+  $sub-selector: '';
+
+  @if $default {
+    $sub-selector: $sub-selector + '&, ';
+  }
+  @if $link {
+    $sub-selector: $sub-selector + '&:link, ';
+  }
+  @if $visited {
+    $sub-selector: $sub-selector + '&:visited, ';
+  }
+  @if $hover {
+    $sub-selector: $sub-selector + '&:hover, ';
+  }
+  @if $active {
+    $sub-selector: $sub-selector + '&:active, ';
+  }
+  @if $focus {
+    $sub-selector: $sub-selector + '&:focus, ';
+  }
+
+  $sub-selector: str_slice($sub-selector, 0, str_length($sub-selector) - 2);
+
+  @if null == $selector {
+    #{$sub-selector} {
+      @content;
+    }
+  } @else {
+    #{$selector} {
+      #{$sub-selector} {
+        @content;
+      }
+    }
   }
 }
-@mixin anchor-hover() {
-  &:hover,
-  &:active {
-    @content;
+@mixin anchor($selector...) {
+  @if 0 == length($selector) {
+    @include anchorify(null) {
+      @content;
+    }
+  }
+
+  @if 'arglist' == type_of($selector) {
+    @each $i in $selector {
+      @include anchorify($i) {
+        @content;
+      }
+    }
+  } @else {
+    @include anchorify($selector) {
+      @content;
+    }
+  }
+}
+@mixin anchor-hover($selector...) {
+  @if 0 == length($selector) {
+    @include anchorify(null, $default: false, $link: false, $visited: false, $focus: false) {
+      @content;
+    }
+  }
+
+  @if 'arglist' == type_of($selector) {
+    @each $i in $selector {
+      @include anchorify($i, $default: false, $link: false, $visited: false, $focus: false) {
+        @content;
+      }
+    }
+  } @else {
+    @include anchorify($selector, $default: false, $link: false, $visited: false, $focus: false) {
+      @content;
+    }
   }
 }
