@@ -2,6 +2,7 @@
 @cls
 
 del /Q /F dist
+mkdir dist
 
 copy /B js\frame\frame.js dist\frame.js
 copy /B js\transition-end\transition-end.js dist\transition-end.js
