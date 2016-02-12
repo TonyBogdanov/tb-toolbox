@@ -75,25 +75,6 @@ $base:                16 !default;
 }
 @mixin anchor-hover($selector...) {
   @if 0 == length($selector) {
-    @include anchorify(null, $default: false, $link: false, $visited: false, $hover: false, $focus: false) {
-      @content;
-    }
-  }
-
-  @if 'arglist' == type_of($selector) {
-    @each $i in $selector {
-      @include anchorify($i, $default: false, $link: false, $visited: false, $hover: false, $focus: false) {
-        @content;
-      }
-    }
-  } @else {
-    @include anchorify($selector, $default: false, $link: false, $visited: false, $hover: false, $focus: false) {
-      @content;
-    }
-  }
-}
-@mixin anchor-active($selector...) {
-  @if 0 == length($selector) {
     @include anchorify(null, $default: false, $link: false, $visited: false, $active: false, $focus: false) {
       @content;
     }
@@ -107,6 +88,25 @@ $base:                16 !default;
     }
   } @else {
     @include anchorify($selector, $default: false, $link: false, $visited: false, $active: false, $focus: false) {
+      @content;
+    }
+  }
+}
+@mixin anchor-active($selector...) {
+  @if 0 == length($selector) {
+    @include anchorify(null, $default: false, $link: false, $visited: false, $hover: false, $focus: false) {
+      @content;
+    }
+  }
+
+  @if 'arglist' == type_of($selector) {
+    @each $i in $selector {
+      @include anchorify($i, $default: false, $link: false, $visited: false, $hover: false, $focus: false) {
+        @content;
+      }
+    }
+  } @else {
+    @include anchorify($selector, $default: false, $link: false, $visited: false, $hover: false, $focus: false) {
       @content;
     }
   }
