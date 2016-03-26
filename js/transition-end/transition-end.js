@@ -40,10 +40,10 @@
 
         // Map animation properties with the corresponding animationnend event names
         var events              = {
-            'transition':       'animationend',
-            'OTransition':      'oAnimationEnd',
-            'MozTransition':    'animationend',
-            'WebkitTransition': 'webkitAnimationEnd'
+            'animation':        'animationend',
+            'OAnimation':       'oAnimationEnd',
+            'MozAnimation':     'animationend',
+            'WebkitAnimation':  'webkitAnimationEnd'
         };
 
         // Get the first supported event name
