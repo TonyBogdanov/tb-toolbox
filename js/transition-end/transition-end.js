@@ -34,14 +34,42 @@
         // Browser does not support the transitionend event
         return null;
     };
-    $.fn.transitionEnd          = function(callback, propertyNames, fallbackTimeout) {
+    var detectAnimationEvent    = function() {
+        // Create a dummy element to test for event names
+        var element             = document.createElement('div');
+
+        // Map animation properties with the corresponding animationnend event names
+        var events              = {
+            'transition':       'animationend',
+            'OTransition':      'oAnimationEnd',
+            'MozTransition':    'animationend',
+            'WebkitTransition': 'webkitAnimationEnd'
+        };
+
+        // Get the first supported event name
+        for(var event in events) {
+            if("undefined" != typeof element.style[event]) {
+                return events[event];
+            }
+        }
+
+        // Browser does not support the animationend event
+        return null;
+    };
+    $.fn.transitionEnd          = function(callback, propertyNames, fallbackTimeout, animation) {
         // Call for all elements in the collection
         return $(this).each(function() {
             // Get a jQuery reference to the current element
             var $this           = $(this);
 
             // Detect the browser supported event name and cache it for future use
-            var event           = "undefined" == typeof window._detectedTransitionEventName ? (window._detectedTransitionEventName = detectTransitionEvent()) : window._detectedTransitionEventName;
+            var event           = animation ?
+                ("undefined" == typeof window._detectedTransitionEventName ?
+                    (window._detectedTransitionEventName = detectTransitionEvent()) :
+                    window._detectedTransitionEventName) :
+                ("undefined" == typeof window._detectedAnimationEventName ?
+                    (window._detectedAnimationEventName = detectAnimationEvent()) :
+                    window._detectedAnimationEventName);
 
             // No browser support, use setTimeout
             if(null === event) {
@@ -73,5 +101,8 @@
                 callback();
             });
         });
+    };
+    $.fn.animationEnd           = function(callback, propertyNames, fallbackTimeout) {
+        return $(this).transitionEnd(callback, propertyNames, fallbackTimeout, true);
     };
 })(jQuery);
