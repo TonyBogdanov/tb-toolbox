@@ -23,4 +23,4 @@ cmd /c minify dist\linking.js
 copy /B dist\frame.js+dist\transition-end.js+dist\count-to.js+dist\resize-it.js+dist\scroll-direction.js+dist\scroll-to-this.js+dist\linking.js dist\toolbox.js
 cmd /c minify dist\toolbox.js
 
-exit /B
+exit

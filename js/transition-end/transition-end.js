@@ -56,20 +56,15 @@
         // Browser does not support the animationend event
         return null;
     };
-    $.fn.transitionEnd          = function(callback, propertyNames, fallbackTimeout, animation) {
+    $.fn.transitionEnd          = function(callback, propertyNames, fallbackTimeout) {
         // Call for all elements in the collection
         return $(this).each(function() {
             // Get a jQuery reference to the current element
             var $this           = $(this);
 
             // Detect the browser supported event name and cache it for future use
-            var event           = animation ?
-                ("undefined" == typeof window._detectedTransitionEventName ?
-                    (window._detectedTransitionEventName = detectTransitionEvent()) :
-                    window._detectedTransitionEventName) :
-                ("undefined" == typeof window._detectedAnimationEventName ?
-                    (window._detectedAnimationEventName = detectAnimationEvent()) :
-                    window._detectedAnimationEventName);
+            var event           = "undefined" == typeof window._detectedTransitionEventName ?
+                (window._detectedTransitionEventName = detectTransitionEvent()) : window._detectedTransitionEventName;
 
             // No browser support, use setTimeout
             if(null === event) {
@@ -81,7 +76,7 @@
             // Get a reference to the raw DOM object
             var domElement      = $this.get(0);
 
-            // Remove any previously bound listeners and add a new even handler
+            // Remove any previously bound listeners and add a new event handler
             $this.unbind(event).bind(event, function(e) {
                 // Is the event actually fired by the current DOM element?
                 if(e.originalEvent.target !== domElement) {
@@ -102,7 +97,37 @@
             });
         });
     };
-    $.fn.animationEnd           = function(callback, propertyNames, fallbackTimeout) {
-        return $(this).transitionEnd(callback, propertyNames, fallbackTimeout, true);
+    $.fn.animationEnd           = function(callback, fallbackTimeout) {
+        // Call for all elements in the collection
+        return $(this).each(function() {
+            // Get a jQuery reference to the current element
+            var $this           = $(this);
+
+            // Detect the browser supported event name and cache it for future use
+            var event           = "undefined" == typeof window._detectedAnimationEventName ?
+                (window._detectedAnimationEventName = detectAnimationEvent()) : window._detectedAnimationEventName;
+
+            // No browser support, use setTimeout
+            if(null === event) {
+                fallbackTimeout = parseInt(fallbackTimeout);
+                setTimeout(callback, isNaN(fallbackTimeout) ? 350 : fallbackTimeout);
+                return true;
+            }
+
+            // Get a reference to the raw DOM object
+            var domElement      = $this.get(0);
+
+            // Remove any previously bound listeners and add a new event handler
+            $this.unbind(event).bind(event, function(e) {
+                // Is the event actually fired by the current DOM element?
+                if(e.originalEvent.target !== domElement) {
+                    return;
+                }
+
+                // All's good, detach the handler and run the callback
+                $(domElement).unbind(event);
+                callback();
+            });
+        });
     };
 })(jQuery);
