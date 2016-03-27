@@ -52,3 +52,13 @@ $slowest:         2.5s;
     #{$property}:   unquote("#{$prefix}calc(#{$value})#{$suffix}");
   }
 }
+
+// Workaround until any of these are resolved either by polymer or by sass devs
+// Requires custom compiler logic
+// https://github.com/sass/sass/issues/1832
+// https://github.com/sass/sass/issues/1128
+@mixin polymer-mixin($property) {
+  polymer-mixin-open: $property;
+  @content;
+  polymer-mixin-close: $property;
+}
