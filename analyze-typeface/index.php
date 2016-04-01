@@ -62,7 +62,7 @@
                 update();
             });
             $('.import').on('change', function() {
-                var val         = $(this).val().match(/\?family=([^:|\)']+)/)[1].replace(/\+/, ' ');
+                var val         = $(this).val().match(/\?family=([^:|\)']+)/)[1].replace(/\+/g, ' ');
                 $('#import').html($(this).val());
                 $('.font').css('font-family', val);
                 console.log('ok', val);
