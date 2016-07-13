@@ -13,8 +13,8 @@ $base:                16 !default;
 // Because of the nature of most graphic editors, the world still revolves around pixels
 // Thus, it's much easier to "think" in pixels when sizing stuff, but still be able to use scalable units
 // This function allows to convert a value from pixels to rems based on the globally defined baseline size
-@function px($value) {
-  @return set-unit(remove-unit($value) / $base, rem);
+@function px($value, $unit: rem) {
+  @return set-unit(remove-unit($value) / $base, $unit);
 }
 
 // It's rather time consuming to write all anchor states when defining selectors
